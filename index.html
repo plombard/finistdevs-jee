@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>JakartaEE + Microprofile</title>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section id="pagedegarde">
+					JakartaEE + Microprofile : A modern Java 
+					<p>
+						<small> Pascal Lombard / <a href="http://twitter.com/plombard_00">@plombard_00</a></small>
+				</p>
+				</section>
+
+				<section id="presentation">
+						<h4>Pascal Lombard</h4>
+						<h4>Développeur de solutions Cloud au Crédit Mutuel Arkéa</h4>
+						<h4>Java, Back, Industrialisation, Cloud</h4>
+				</section>
+
+				<section id="jakartaee">
+					<section>
+						<h2>De J2EE à JavaEE à JakartaEE à...</h2>
+					</section>
+
+					<section>
+						<h3>C'est quoi Java EE ?</h3>
+						<p>Tout bêtement une extension de l'API Java SE (Standard Edition)</p>
+						<li class="fragment">une API supplémentaire</li>
+						<li class="fragment">une implémentation de référence</li>
+						<li class="fragment">un $y$tème de Certification/Licen$ing (TCKs)</li>
+					</section>
+
+					<section>
+						<h3>Un écosystème de vendeurs</h3>
+						<img src="img/oracle-java-strategy-lg-v3-12-728.jpg"/>
+					</section>
+
+					<section>
+						<h3>Chronologie d'un désastre</h3>
+						<ul>
+							<li class="fragment">Java 2 Platform, Enterprise Edition 1.2 (1999)</li>
+							<li class="fragment">J2EE 1.3 (2001)</li>
+							<li class="fragment">J2EE 1.4 (2003)</li>
+							<li class="fragment">Java EE 5 (2006)</li>
+							<li class="fragment">Java EE 6 (2009)</li><p class="fragment">... Rachat par Oracle 😐</p>
+							<li class="fragment">Java EE 7 (2013)</li><p class="fragment">... Désintérêt manifeste 😪</p>
+							<li class="fragment">Java EE 8 (2017)</li>
+						</ul>
+						<aside class="notes">EJB/Servlets/JSP -> Filters/XML -> SOAP -> EJB simples/JAX-RS -> Rachat par Oracle</aside>
+					</section>
+
+					<section>
+							<h3>"Fine. I'll do it myself !"</h3>
+							<img src="img/fine-ill-do-it-myself.gif"/>
+					</section>
+
+					<section>
+						<h3>"Fine. I'll do it myself !"</h3>
+						<ul>
+							<li class="fragment">JavaOne 2016</li>
+							<li class="fragment">Eclipse récupère le projet EE4J (Octobre 2017)</li>
+							<li class="fragment">Sources des TCKs sous licence libre (Septembre 2018)</li>
+							<li class="fragment">Jakarta EE 8 (Septembre 2019)</li>
+							<li class="fragment">Jakarta EE 9 (Big Bang Juin 2020)</li>
+						</ul>
+						<aside class="notes">JavaOne rumeurs JavaEE8 abandonné, Java Guardians, JakartaEE9 renommage seulement
+							Prendre un moment (mode B)
+							JakartaEE est intéressant à examiner car c'est un condensé des changements qui agitent l'IT : un secteur "business"obligé de se transformer en pivotant vers un modèle open-source (sinon pas d'adoption), compatible (sinon une implémentation rafflerait le marché), et qui monétise l'infrastructure et les services cloud d'un côté, et le consulting open-source de l'autre, plutôt que les licences logicielles.
+						</aside>
+					</section>
+
+					<section>
+						<h3>Pourquoi le serveur d'applications est toujours pertinent aujourd'hui ?</h3>
+						<ul>
+							<li class="fragment">Délègue beaucoup de la maintenance aux ops/devops</li>
+							<li class="fragment">Fournit des abstractions connues (Requêtes, Messages, War...)</li>
+							<li class="fragment">Nouveau look pour une nouvelle vie</li>
+							<li class="fragment">Docker</li>
+						</ul>
+						<aside class="notes">Le serveur d'appli permet d'adopter un modèle PaaS dans la relation entre devs et ops/devops. Tout comme le permettent des technologies un peu plus basse couche comme Istio sur k8s.
+						La cadence des mises-à-jour est de plus en plus fixée par la sécurité que par l'exploitation (maj techniques) ou le business (time-to-market). D'où l'intérêt de la retirer des préoccupations des devs.
+						Les fatjars répondaient à une problématique bien précise : contourner les limitations de mise en production des serveurs d'application. Est-ce encore pertinent aujourd'hui alors que l'infra est disponible et à jour à la demande ?
+						</aside>
+					</section>
+
+					<section>
+						<p>L'insoutenable légèreté de n'avoir pas à se soucier du runtime</p>
+						<pre><code class="hljs" data-trim>
+&lt;dependency&gt;
+	&lt;groupId&gt;jakarta.platform&lt;groupId&gt;
+	&lt;artifactId&gt;jakarta.jakartaee-api&lt;artifactId&gt;
+	&lt;version&gt;8.0.0&lt;version&gt;
+	&lt;type&gt;pom&lt;type&gt;
+	&lt;scope&gt;provided&lt;scope&gt;
+&lt;dependency&gt;
+						</code></pre>
+						<aside class="notes">Je n'ai que ça à mettre à jour et ça ne change pas tous les jours</aside>
+					</section>
+
+					<section>
+						<h3>Intérêt du fatjar</h3>
+						<ul>
+							<ol class="fragment">Le serveur d'appli validé par la prod est EE 6</ol>
+							<ol class="fragment">Je développe avec les apis EE 8 parce que l'agilité</ol>
+							<ol class="fragment">J'attends que la prod valide un serveur EE 8</ol>
+							<ol class="fragment">Le temps que ça arrive ma boîte a coulé...</ol>
+							<ol class="fragment">... à moins que je n'emballe le tout dans un fatjar !</ol>
+						</ul>
+						<aside class="notes">
+						Les fatjars répondaient à une problématique bien précise : contourner les limitations de mise en production des serveurs d'application. Est-ce encore pertinent aujourd'hui alors que l'infra est disponible et à jour à la demande ?
+						</aside>
+					</section>
+
+					<section data-transition="none">
+						<h3>Intérêt du thin war</h3>
+						<img src="img/Fatjar.png"/>
+					</section>
+					<section data-transition="none">
+						<h3>Intérêt du thin war</h3>
+						<img src="img/Fatjar cacheable.png"/>
+					</section>
+					<section data-transition="none">
+						<h3>Intérêt du thin war</h3>
+						<img src="img/Thin war.png"/>
+					</section>
+					<section data-transition="none">
+						<h3>Intérêt du thin war</h3>
+						<img src="img/Thin war cacheable.png"/>
+					</section>
+				</section>
+
+				<section id="microprofile">
+					<section>
+						<h2>Microprofile, un JavaEE "léger" ?</h2>
+
+						<aside class="notes">Demander à l'assemblée ce qu'elle attend d'une techno "microservice"</aside>
+					</section>
+					<section>
+						<h2>Microprofile - Objectifs</h2>
+						<p class="fragment">Sous-ensemble minimal de JakartaEE</p>
+						<p class="fragment"> + Des fonctionnalités pour gérer la complexité (μS)</p>
+						<p class="fragment">... Mais une cadence plus élevée (3/an).</p>
+						<p class="fragment">Une gouvernance similaire mais plus souple</p>
+
+						<aside class="notes">Adapter le Serveur d'Applications au développement de microservices : uniquement les fonctionnalités essentielles à l'exploitation, dans des runtimes plus petits et plus performants. Permettre à une organisation JavaEE d'adopter un modèle microservices.</aside>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation.png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(1).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(2).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(3).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(4).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(5).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(6).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(7).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(8).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(9).png"/>
+					</section>
+					<section data-transition="none">
+						<img src="img/EclipseMicroProfilePresentation(10).png"/>
+					</section>
+
+					<section>
+						<h3>Implémentations</h3>
+						<img src="img/EclipseMicroProfileImplementations.png"/>
+
+						<aside class="notes">Hammock c'est un gus tout seul. Le matou c'est Fujitsu Launcher.</aside>
+					</section>
+				</section>
+
+				<section id="demo">
+					<h2>Démo</h2>
+					<p><a href="https://start.microprofile.io/">Microprofile Starter</a></p>
+				</section>
+
+				<section id="conclusion">
+					<p>JakartaEE est le reflet parfait de l'évolution des 2010s</p>
+					<ul>
+						<li>Commercial -> Open Source</li>
+						<li>Vente de licences -> Support et Services Cloud</li>
+						<li>Corporations -> Communautés</li>
+						<li>Évolutions forcées par la technologie</li>
+					</ul>
+				</section>
+
+				<section id="documentation">
+					<h2>Documentation</h2>
+					<ul>
+						<li><a href="https://www.eclipse.org/community/eclipse_newsletter/2019/august/jakartaee8.php">Jakarta/Java EE rétrospective</a></li>
+						<li><a href="https://docs.google.com/presentation/d/1BYfVqnBIffh-QDIrPyromwc9YSwIbsawGUECSsrSQB0/edit#slide=id.p">Présentation Microprofile</a></li>
+						<li><a href="https://www.eclipse.org/community/eclipse_newsletter/2019/september/microprofile.php">Microprofile Vue Générale</a></li>
+						<li><a href="https://developers.redhat.com/blog/2017/08/24/the-skinny-on-fat-thin-hollow-and-uber/">Thin wars et compagnie</a></li>
+					</ul>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
